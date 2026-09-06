@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { signupAction } from "@/lib/actions/auth";
 import { navigateTo, onClientSubmit } from "@/lib/client-nav";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,14 @@ export function SignupForm() {
       setError(result.error);
       return;
     }
-    navigateTo("/dashboard");
+    toast.success(
+      result.signedIn
+        ? "Account created successfully."
+        : "Account created successfully. Sign in with your email and password.",
+    );
+    window.setTimeout(() => {
+      navigateTo(result.signedIn ? "/dashboard" : "/login");
+    }, 900);
   }
 
   return (

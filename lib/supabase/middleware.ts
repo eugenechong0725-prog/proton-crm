@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isDemoRequest } from "@/lib/demo/session";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/public-env";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/demo"];
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth/confirm", "/demo"];
 
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -44,7 +44,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isPublic) {
+  if (user && isPublic && pathname !== "/forgot-password" && pathname !== "/auth/confirm") {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/dashboard";
     redirectUrl.search = "";

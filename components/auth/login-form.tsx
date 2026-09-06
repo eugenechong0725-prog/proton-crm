@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { loginAction } from "@/lib/actions/auth";
 import { navigateTo, onClientSubmit } from "@/lib/client-nav";
@@ -32,7 +33,12 @@ export function LoginForm() {
         <Input id="email" name="email" type="email" autoComplete="email" required placeholder="you@dealership.com" />
       </Field>
       <Field>
-        <Label htmlFor="password">Password</Label>
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="password">Password</Label>
+          <Link href="/forgot-password" className="text-sm font-semibold text-primary hover:underline">
+            Forgot password?
+          </Link>
+        </div>
         <PasswordInput id="password" name="password" autoComplete="current-password" required />
       </Field>
       {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
