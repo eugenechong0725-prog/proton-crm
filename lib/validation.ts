@@ -2,10 +2,12 @@ import {
   CUSTOMER_STATUSES,
   FOLLOW_UP_PRESETS,
   INSURANCE_FILTERS,
+  INTEREST_LEVELS,
   PROTON_MODELS,
   type CustomerStatus,
   type FollowUpPreset,
   type InsuranceFilter,
+  type InterestLevel,
   type ProtonModel,
 } from "@/lib/constants";
 
@@ -15,6 +17,7 @@ const FOLLOW_UP_VALUES = new Set(FOLLOW_UP_PRESETS.map((item) => item.value));
 const MODEL_VALUES = new Set(PROTON_MODELS.map((item) => item.value));
 const STATUS_VALUES = new Set(CUSTOMER_STATUSES.map((item) => item.value));
 const INSURANCE_VALUES = new Set(INSURANCE_FILTERS.map((item) => item.value));
+const INTEREST_LEVEL_VALUES = new Set(INTEREST_LEVELS.map((item) => item.value));
 
 export function isUuid(value: string): boolean {
   return UUID_RE.test(value);
@@ -38,6 +41,11 @@ export function isValidDateRange(startDate: string, expiryDate: string): boolean
 export function readFollowUpPreset(value: FormDataEntryValue | null): FollowUpPreset | null {
   const preset = String(value ?? "none") || "none";
   return FOLLOW_UP_VALUES.has(preset as FollowUpPreset) ? (preset as FollowUpPreset) : null;
+}
+
+export function readInterestLevel(value: FormDataEntryValue | null): InterestLevel | null {
+  const level = String(value ?? "");
+  return INTEREST_LEVEL_VALUES.has(level as InterestLevel) ? (level as InterestLevel) : null;
 }
 
 export function readModelFilter(value: string | undefined): ProtonModel | "all" {

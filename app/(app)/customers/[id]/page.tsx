@@ -6,6 +6,7 @@ import { FollowedUpDialog } from "@/components/customers/followed-up-dialog";
 import { SoldDialog } from "@/components/customers/sold-dialog";
 import { RenewedDialog } from "@/components/insurance/renewed-dialog";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { InterestLevelBadge } from "@/components/shared/interest-level-badge";
 import { WhatsAppButton } from "@/components/shared/whatsapp-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDisplayDate, formatDisplayDateTime, yearOfDate } from "@/lib/dates";
@@ -41,6 +42,7 @@ export default async function CustomerProfilePage({
               {modelLabel(customer.proton_model)} · {formatMalaysiaPhone(customer.phone)}
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
+              <InterestLevelBadge level={customer.interest_level} />
               <StatusBadge status={customer.customer_status} />
               {customer.archived_at ? <span className="text-sm font-semibold text-muted-foreground">Archived</span> : null}
             </div>

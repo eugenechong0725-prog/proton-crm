@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FollowedUpDialog } from "@/components/customers/followed-up-dialog";
+import { InterestLevelBadge } from "@/components/shared/interest-level-badge";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { WhatsAppButton } from "@/components/shared/whatsapp-button";
 import { Card } from "@/components/ui/card";
@@ -26,7 +27,10 @@ export function FollowUpCard({
             {modelLabel(customer.proton_model)} · {formatMalaysiaPhone(customer.phone)}
           </p>
         </div>
-        <StatusBadge status={customer.customer_status} />
+        <div className="flex flex-col items-end gap-1">
+          <InterestLevelBadge level={customer.interest_level} />
+          <StatusBadge status={customer.customer_status} />
+        </div>
       </div>
       {customer.latest_remark ? (
         <p className="mt-3 rounded-xl bg-muted px-3 py-2 text-sm leading-6">

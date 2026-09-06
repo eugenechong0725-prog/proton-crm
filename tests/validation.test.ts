@@ -5,6 +5,7 @@ import {
   isValidDateRange,
   readFollowUpPreset,
   readInsuranceFilter,
+  readInterestLevel,
   readModelFilter,
   readStatusFilter,
 } from "@/lib/validation";
@@ -25,6 +26,13 @@ describe("server input validation", () => {
     expect(readFollowUpPreset("3")).toBe("3");
     expect(readFollowUpPreset("custom")).toBe("custom");
     expect(readFollowUpPreset("NaN")).toBeNull();
+  });
+
+  it("accepts only supported customer interest levels", () => {
+    expect(readInterestLevel("hot")).toBe("hot");
+    expect(readInterestLevel("warm")).toBe("warm");
+    expect(readInterestLevel("cold")).toBe("cold");
+    expect(readInterestLevel("urgent")).toBeNull();
   });
 
   it("validates customer identifiers", () => {

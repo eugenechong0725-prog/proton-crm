@@ -15,6 +15,9 @@ const badgeVariants = cva(
         urgent: "bg-orange-100 text-orange-800",
         today: "bg-blue-100 text-blue-800",
         upcoming: "bg-indigo-100 text-indigo-800",
+        hot: "bg-rose-100 text-rose-800",
+        warm: "bg-amber-100 text-amber-800",
+        cold: "bg-cyan-100 text-cyan-800",
       },
     },
     defaultVariants: {

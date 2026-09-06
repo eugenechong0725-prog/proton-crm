@@ -21,6 +21,14 @@ export const CUSTOMER_STATUSES = [
 
 export type CustomerStatus = (typeof CUSTOMER_STATUSES)[number]["value"];
 
+export const INTEREST_LEVELS = [
+  { value: "hot", label: "Hot" },
+  { value: "warm", label: "Warm" },
+  { value: "cold", label: "Cold" },
+] as const;
+
+export type InterestLevel = (typeof INTEREST_LEVELS)[number]["value"];
+
 export const FOLLOW_UP_PRESETS = [
   { value: "none", label: "No Follow-up", days: null },
   { value: "1", label: "Tomorrow", days: 1 },

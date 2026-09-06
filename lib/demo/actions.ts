@@ -1,7 +1,7 @@
 import { CUSTOMER_STATUSES, PROTON_MODELS, type CustomerStatus, type ProtonModel } from "@/lib/constants";
 import { resolveFollowUp } from "@/lib/follow-up";
 import { normalizeMalaysiaPhone } from "@/lib/phone";
-import { isIsoDate, isValidDateRange, readFollowUpPreset } from "@/lib/validation";
+import { isIsoDate, isValidDateRange, readFollowUpPreset, readInterestLevel } from "@/lib/validation";
 type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 import {
   demoAddFollowUp,
@@ -34,6 +34,7 @@ function markSold(sessionId: string, formData: FormData, existingId: string | nu
   const phone = normalizeMalaysiaPhone(phoneRaw) ?? phoneRaw;
   const protonModel =
     existing?.proton_model ?? readModel(formData.get("proton_model")) ?? readModel(formData.get("vehicle_model"));
+  const interestLevel = existing?.interest_level ?? readInterestLevel(formData.get("interest_level"));
   const remark = String(formData.get("remark") ?? "").trim();
   const vehicleModel = readModel(formData.get("vehicle_model")) ?? protonModel;
   const registration = String(formData.get("registration_number") ?? "")
@@ -46,7 +47,9 @@ function markSold(sessionId: string, formData: FormData, existingId: string | nu
   const startDate = String(formData.get("insurance_start_date") ?? "");
   const expiryDate = String(formData.get("insurance_expiry_date") ?? "");
 
-  if (!name || !phoneRaw || !protonModel) return { ok: false, error: "Name, phone, and model are required." };
+  if (!name || !phoneRaw || !protonModel || !interestLevel) {
+    return { ok: false, error: "Name, phone, model, and interest level are required." };
+  }
   if (!registration) return { ok: false, error: "Car registration number is required." };
   if (!deliveryDate) return { ok: false, error: "Sale / delivery date is required." };
   if (!startDate) return { ok: false, error: "Insurance start date is required." };
@@ -63,6 +66,7 @@ function markSold(sessionId: string, formData: FormData, existingId: string | nu
       name,
       phone,
       proton_model: protonModel,
+      interest_level: interestLevel,
       customer_status: "sold",
       next_follow_up_at: null,
       follow_up_enabled: false,
@@ -124,6 +128,7 @@ export function createCustomer(sessionId: string, formData: FormData): ActionRes
   const phone = normalizeMalaysiaPhone(phoneRaw) ?? phoneRaw;
   const protonModel = readModel(formData.get("proton_model"));
   const status = readStatus(formData.get("customer_status")) ?? "new_lead";
+  const interestLevel = readInterestLevel(formData.get("interest_level"));
   const preset = readFollowUpPreset(formData.get("follow_up_preset"));
   const customDate = String(formData.get("custom_follow_up_date") ?? "") || null;
   const remark = String(formData.get("remark") ?? "").trim();
@@ -131,6 +136,7 @@ export function createCustomer(sessionId: string, formData: FormData): ActionRes
   if (!name) return { ok: false, error: "Customer name is required." };
   if (!phoneRaw) return { ok: false, error: "Phone number is required." };
   if (!protonModel) return { ok: false, error: "Select a Proton model." };
+  if (!interestLevel) return { ok: false, error: "Select a valid interest level." };
   if (!preset) return { ok: false, error: "Select a valid follow-up option." };
   if (preset === "custom" && (!customDate || !isIsoDate(customDate))) {
     return { ok: false, error: "Enter a valid custom follow-up date." };
@@ -148,6 +154,7 @@ export function createCustomer(sessionId: string, formData: FormData): ActionRes
     name,
     phone,
     proton_model: protonModel,
+    interest_level: interestLevel,
     customer_status: status,
     next_follow_up_at: followUp.nextFollowUpAt,
     follow_up_enabled: followUp.enabled,
@@ -173,11 +180,12 @@ export function updateCustomer(sessionId: string, formData: FormData): ActionRes
   const phone = normalizeMalaysiaPhone(phoneRaw) ?? phoneRaw;
   const protonModel = readModel(formData.get("proton_model"));
   const status = readStatus(formData.get("customer_status"));
+  const interestLevel = readInterestLevel(formData.get("interest_level"));
   const current = id ? getDemoCustomer(sessionId, id).customer : null;
 
   if (!id || !current) return { ok: false, error: "Missing customer." };
-  if (!name || !protonModel || !status) {
-    return { ok: false, error: "Name, model, and status are required." };
+  if (!name || !protonModel || !status || !interestLevel) {
+    return { ok: false, error: "Name, model, interest level, and status are required." };
   }
   if (!normalizeMalaysiaPhone(phoneRaw)) return { ok: false, error: "Enter a valid Malaysian mobile number." };
   if (status === "sold" && current.customer_status !== "sold") {
@@ -187,7 +195,13 @@ export function updateCustomer(sessionId: string, formData: FormData): ActionRes
     return { ok: false, error: "A sold customer cannot be changed back to a lead." };
   }
 
-  demoUpdateCustomer(sessionId, id, { name, phone, proton_model: protonModel, customer_status: status });
+  demoUpdateCustomer(sessionId, id, {
+    name,
+    phone,
+    proton_model: protonModel,
+    interest_level: interestLevel,
+    customer_status: status,
+  });
   return { ok: true, id };
 }
 

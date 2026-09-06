@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { navigateTo, onClientSubmit } from "@/lib/client-nav";
-import { CUSTOMER_STATUSES, PROTON_MODELS, type CustomerStatus, type FollowUpPreset, type ProtonModel } from "@/lib/constants";
+import {
+  CUSTOMER_STATUSES,
+  INTEREST_LEVELS,
+  PROTON_MODELS,
+  type CustomerStatus,
+  type FollowUpPreset,
+  type ProtonModel,
+} from "@/lib/constants";
 import { createCustomerAction } from "@/lib/actions/customers";
 import { Button } from "@/components/ui/button";
 import { Field, NativeSelect } from "@/components/ui/field";
@@ -65,6 +72,16 @@ export function CustomerForm() {
             Select model
           </option>
           {PROTON_MODELS.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </NativeSelect>
+      </Field>
+      <Field>
+        <Label htmlFor="interest_level">Interest Level</Label>
+        <NativeSelect id="interest_level" name="interest_level" defaultValue="warm">
+          {INTEREST_LEVELS.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>

@@ -1,13 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { CUSTOMER_STATUSES, PROTON_MODELS, type CustomerStatus, type ProtonModel } from "@/lib/constants";
+import {
+  CUSTOMER_STATUSES,
+  PROTON_MODELS,
+  type CustomerStatus,
+  type InterestLevel,
+  type ProtonModel,
+} from "@/lib/constants";
 import { resolveFollowUp } from "@/lib/follow-up";
 import { normalizeMalaysiaPhone } from "@/lib/phone";
 import { createClient } from "@/lib/supabase/server";
 import { getDemoSessionId } from "@/lib/demo/session";
 import * as demo from "@/lib/demo/actions";
-import { isIsoDate, isUuid, isValidDateRange, readFollowUpPreset } from "@/lib/validation";
+import { isIsoDate, isUuid, isValidDateRange, readFollowUpPreset, readInterestLevel } from "@/lib/validation";
 
 export type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 
@@ -45,6 +51,7 @@ export async function createCustomerAction(formData: FormData): Promise<ActionRe
   const phone = normalizeMalaysiaPhone(phoneRaw) ?? phoneRaw;
   const protonModel = readModel(formData.get("proton_model"));
   const status = readStatus(formData.get("customer_status")) ?? "new_lead";
+  const interestLevel = readInterestLevel(formData.get("interest_level"));
   const preset = readFollowUpPreset(formData.get("follow_up_preset"));
   const customDate = String(formData.get("custom_follow_up_date") ?? "") || null;
   const remark = String(formData.get("remark") ?? "").trim();
@@ -52,6 +59,7 @@ export async function createCustomerAction(formData: FormData): Promise<ActionRe
   if (!name) return { ok: false, error: "Customer name is required." };
   if (!phoneRaw) return { ok: false, error: "Phone number is required." };
   if (!protonModel) return { ok: false, error: "Select a Proton model." };
+  if (!interestLevel) return { ok: false, error: "Select a valid interest level." };
   if (!preset) return { ok: false, error: "Select a valid follow-up option." };
   if (preset === "custom" && (!customDate || !isIsoDate(customDate))) {
     return { ok: false, error: "Enter a valid custom follow-up date." };
@@ -67,6 +75,7 @@ export async function createCustomerAction(formData: FormData): Promise<ActionRe
       name,
       phone,
       protonModel,
+      interestLevel,
       remark,
       formData,
     });
@@ -77,6 +86,7 @@ export async function createCustomerAction(formData: FormData): Promise<ActionRe
     p_phone: phone,
     p_proton_model: protonModel,
     p_customer_status: status,
+    p_interest_level: interestLevel,
     p_next_follow_up_at: followUp.nextFollowUpAt,
     p_follow_up_enabled: followUp.enabled,
     p_remark: remark,
@@ -105,10 +115,11 @@ export async function updateCustomerAction(formData: FormData): Promise<ActionRe
   const phone = normalizeMalaysiaPhone(phoneRaw) ?? phoneRaw;
   const protonModel = readModel(formData.get("proton_model"));
   const status = readStatus(formData.get("customer_status"));
+  const interestLevel = readInterestLevel(formData.get("interest_level"));
 
   if (!isUuid(id)) return { ok: false, error: "Invalid customer." };
-  if (!name || !protonModel || !status) {
-    return { ok: false, error: "Name, model, and status are required." };
+  if (!name || !protonModel || !status || !interestLevel) {
+    return { ok: false, error: "Name, model, interest level, and status are required." };
   }
   if (!normalizeMalaysiaPhone(phoneRaw)) {
     return { ok: false, error: "Enter a valid Malaysian mobile number." };
@@ -136,6 +147,7 @@ export async function updateCustomerAction(formData: FormData): Promise<ActionRe
       name,
       phone,
       proton_model: protonModel,
+      interest_level: interestLevel,
       customer_status: status,
     })
     .eq("id", id)
@@ -218,6 +230,7 @@ type SoldPayload = {
   name: string;
   phone: string;
   protonModel: ProtonModel;
+  interestLevel: InterestLevel;
   remark: string;
   formData: FormData;
 };
@@ -254,6 +267,7 @@ async function markSoldInternal(
     p_name: payload.name,
     p_phone: payload.phone,
     p_proton_model: payload.protonModel,
+    p_interest_level: payload.interestLevel,
     p_vehicle_model: vehicleModel,
     p_registration_number: registration,
     p_delivery_date: deliveryDate,
@@ -297,6 +311,10 @@ export async function markSoldAction(formData: FormData): Promise<ActionResult> 
     name: existing?.name ?? String(formData.get("name") ?? "").trim(),
     phone: existing?.phone ?? String(formData.get("phone") ?? "").trim(),
     protonModel: (existing?.proton_model as ProtonModel) ?? readModel(formData.get("proton_model")) ?? "saga",
+    interestLevel:
+      (existing?.interest_level as InterestLevel | undefined) ??
+      readInterestLevel(formData.get("interest_level")) ??
+      "warm",
     remark: String(formData.get("remark") ?? "").trim(),
     formData,
   });

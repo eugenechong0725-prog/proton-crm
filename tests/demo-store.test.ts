@@ -10,6 +10,7 @@ describe("demo session isolation", () => {
       name: "Session A only",
       phone: "60162246868",
       proton_model: "saga",
+      interest_level: "warm",
       customer_status: "new_lead",
       next_follow_up_at: null,
       follow_up_enabled: false,

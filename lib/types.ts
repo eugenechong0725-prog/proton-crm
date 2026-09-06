@@ -1,4 +1,4 @@
-import type { CustomerStatus, ProtonModel } from "@/lib/constants";
+import type { CustomerStatus, InterestLevel, ProtonModel } from "@/lib/constants";
 
 export type Profile = {
   id: string;
@@ -14,6 +14,7 @@ export type Customer = {
   name: string;
   phone: string;
   proton_model: ProtonModel;
+  interest_level: InterestLevel;
   customer_status: CustomerStatus;
   next_follow_up_at: string | null;
   follow_up_enabled: boolean;

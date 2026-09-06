@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CUSTOMER_STATUSES, PROTON_MODELS, type CustomerStatus } from "@/lib/constants";
+import { CUSTOMER_STATUSES, INTEREST_LEVELS, PROTON_MODELS, type CustomerStatus } from "@/lib/constants";
 import { onClientSubmit, refreshPage } from "@/lib/client-nav";
 import { updateCustomerAction } from "@/lib/actions/customers";
 import type { Customer } from "@/lib/types";
@@ -53,6 +53,16 @@ function CustomerEditFormFields({ customer }: { customer: Customer }) {
         <Label htmlFor="edit-model">Proton Model</Label>
         <NativeSelect id="edit-model" name="proton_model" defaultValue={customer.proton_model}>
           {PROTON_MODELS.map((item) => (
+            <option key={item.value} value={item.value}>
+              {item.label}
+            </option>
+          ))}
+        </NativeSelect>
+      </Field>
+      <Field>
+        <Label htmlFor="edit-interest-level">Interest Level</Label>
+        <NativeSelect id="edit-interest-level" name="interest_level" defaultValue={customer.interest_level}>
+          {INTEREST_LEVELS.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>

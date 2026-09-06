@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FollowedUpDialog } from "@/components/customers/followed-up-dialog";
+import { InterestLevelBadge } from "@/components/shared/interest-level-badge";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { WhatsAppButton } from "@/components/shared/whatsapp-button";
 import { Card } from "@/components/ui/card";
@@ -24,6 +25,7 @@ export function CustomerListCard({ customer }: { customer: CustomerRecord }) {
           ) : null}
         </div>
         <div className="flex flex-col items-end gap-1">
+          <InterestLevelBadge level={customer.interest_level} />
           <StatusBadge status={customer.customer_status} />
           {customer.archived_at ? (
             <span className="text-xs font-semibold text-muted-foreground">Archived</span>
