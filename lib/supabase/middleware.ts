@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isDemoRequest } from "@/lib/demo/session";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/public-env";
 
 const PUBLIC_PATHS = ["/login", "/signup", "/demo"];
 
@@ -9,27 +10,11 @@ export async function updateSession(request: NextRequest) {
   const isPublic = PUBLIC_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 
   if (isDemoRequest(request)) {
-    if (isPublic && pathname !== "/demo") {
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = "/dashboard";
-      redirectUrl.search = "";
-      return NextResponse.redirect(redirectUrl);
-    }
     return NextResponse.next({ request });
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !key) {
-    if (!isPublic && pathname !== "/") {
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = "/login";
-      redirectUrl.search = "";
-      return NextResponse.redirect(redirectUrl);
-    }
-    return NextResponse.next({ request });
-  }
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonKey();
 
   let response = NextResponse.next({ request });
 

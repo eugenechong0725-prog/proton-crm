@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -11,6 +10,11 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
 
   if (!email || !password) {
     return { ok: false, error: "Enter your email and password." };
+  }
+
+  const { isDemo, clearDemoCookie } = await import("@/lib/demo/session");
+  if (await isDemo()) {
+    await clearDemoCookie();
   }
 
   const supabase = await createClient();
@@ -39,6 +43,11 @@ export async function signupAction(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: "Password must be at least 8 characters." };
   }
 
+  const { isDemo, clearDemoCookie } = await import("@/lib/demo/session");
+  if (await isDemo()) {
+    await clearDemoCookie();
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -62,14 +71,14 @@ export async function signupAction(formData: FormData): Promise<ActionResult> {
   return { ok: true };
 }
 
-export async function logoutAction() {
+export async function logoutAction(): Promise<ActionResult> {
   const { isDemo, clearDemoCookie } = await import("@/lib/demo/session");
   if (await isDemo()) {
     await clearDemoCookie();
-    redirect("/login");
+    return { ok: true };
   }
 
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  return { ok: true };
 }

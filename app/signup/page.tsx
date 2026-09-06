@@ -4,6 +4,8 @@ import { SignupForm } from "@/components/auth/signup-form";
 import { hasSupabaseEnv } from "@/lib/supabase/server";
 import { SetupScreen } from "@/components/setup-screen";
 
+export const dynamic = "force-dynamic";
+
 export default function SignupPage() {
   if (!hasSupabaseEnv()) {
     return <SetupScreen />;
