@@ -40,7 +40,7 @@ export async function signupAction(formData: FormData): Promise<ActionResult> {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -50,6 +50,13 @@ export async function signupAction(formData: FormData): Promise<ActionResult> {
 
   if (error) {
     return { ok: false, error: error.message };
+  }
+
+  if (!data.session) {
+    return {
+      ok: false,
+      error: "Account created. Turn off Confirm email in Supabase Auth, then sign in.",
+    };
   }
 
   return { ok: true };

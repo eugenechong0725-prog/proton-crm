@@ -22,9 +22,9 @@ export async function updateSession(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
-    if (pathname !== "/demo") {
+    if (!isPublic && pathname !== "/") {
       const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = "/demo";
+      redirectUrl.pathname = "/login";
       redirectUrl.search = "";
       return NextResponse.redirect(redirectUrl);
     }

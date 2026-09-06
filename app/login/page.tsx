@@ -24,7 +24,7 @@ export default function LoginPage() {
           href="/demo"
           className="mt-3 flex h-12 items-center justify-center rounded-xl border border-border bg-card text-sm font-semibold hover:bg-muted"
         >
-          Open demo
+          Demo account
         </a>
         <p className="mt-5 text-sm text-muted-foreground">
           Need an account?{" "}
