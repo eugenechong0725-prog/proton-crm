@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CustomerEditDialog } from "@/components/customers/customer-edit-dialog";
 import { FollowedUpDialog } from "@/components/customers/followed-up-dialog";
 import { InterestLevelBadge } from "@/components/shared/interest-level-badge";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -24,12 +25,15 @@ export function CustomerListCard({ customer }: { customer: CustomerRecord }) {
             <p className="text-sm font-semibold">Plate: {customer.vehicles.registration_number}</p>
           ) : null}
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <InterestLevelBadge level={customer.interest_level} />
-          <StatusBadge status={customer.customer_status} />
-          {customer.archived_at ? (
-            <span className="text-xs font-semibold text-muted-foreground">Archived</span>
-          ) : null}
+        <div className="flex items-start gap-1">
+          <div className="flex flex-col items-end gap-1">
+            <InterestLevelBadge level={customer.interest_level} />
+            <StatusBadge status={customer.customer_status} />
+            {customer.archived_at ? (
+              <span className="text-xs font-semibold text-muted-foreground">Archived</span>
+            ) : null}
+          </div>
+          <CustomerEditDialog customer={customer} />
         </div>
       </div>
       {customer.latest_remark ? (

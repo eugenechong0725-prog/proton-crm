@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { navigateTo, onClientSubmit } from "@/lib/client-nav";
 import {
   CUSTOMER_STATUSES,
@@ -38,7 +39,10 @@ export function CustomerForm() {
       return;
     }
 
-    navigateTo(result.id ? `/customers/${result.id}` : "/customers");
+    toast.success("Customer saved successfully.");
+    window.setTimeout(() => {
+      navigateTo(result.id ? `/customers/${result.id}` : "/customers");
+    }, 650);
   }
 
   return (

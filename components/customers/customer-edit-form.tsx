@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { CUSTOMER_STATUSES, INTEREST_LEVELS, PROTON_MODELS, type CustomerStatus } from "@/lib/constants";
 import { onClientSubmit, refreshPage } from "@/lib/client-nav";
 import { updateCustomerAction } from "@/lib/actions/customers";
@@ -11,16 +12,23 @@ import { Field, NativeSelect } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function CustomerEditForm({ customer }: { customer: Customer }) {
+export function CustomerEditForm({
+  customer,
+  onSuccess,
+}: {
+  customer: Customer;
+  onSuccess?: () => void;
+}) {
   return (
     <CustomerEditFormFields
       key={`${customer.updated_at}:${customer.customer_status}`}
       customer={customer}
+      onSuccess={onSuccess}
     />
   );
 }
 
-function CustomerEditFormFields({ customer }: { customer: Customer }) {
+function CustomerEditFormFields({ customer, onSuccess }: { customer: Customer; onSuccess?: () => void }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -35,6 +43,8 @@ function CustomerEditFormFields({ customer }: { customer: Customer }) {
       setError(result.error);
       return;
     }
+    toast.success("Customer details updated successfully.");
+    onSuccess?.();
     refreshPage(router);
   }
 
