@@ -22,7 +22,7 @@ The UI and business logic are done. To connect the live database:
 
 1. Use the existing project or create one.
 2. Run every file in `supabase/migrations/` in the SQL editor, in filename order.
-3. Put these in `.env.local` and Vercel:
+3. Put these in `.env.local` and in Vercel → Settings → Environment Variables:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
@@ -30,7 +30,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 4. In Authentication, keep Email login on. For this dealership tool, turn off **Confirm email**.
-5. Run `npm run dev` and sign in.
+5. Run `npm run dev` and sign in. On Vercel, Redeploy after saving the env vars.
 
 Each salesperson only sees their own customers. RLS is in the migration.
 

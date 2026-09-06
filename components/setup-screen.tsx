@@ -10,16 +10,25 @@ export function SetupScreen() {
           <CardTitle className="mt-4">Connect Supabase to start</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
-          <p>Create a Supabase project, then add these to <code>.env.local</code>:</p>
+          <p>
+            The app is deployed, but Supabase keys are missing on this host. Add these in
+            Vercel → Project → Settings → Environment Variables (Production, Preview, and
+            Development), then Redeploy:
+          </p>
           <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-muted p-3 text-xs text-foreground">
 {`NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key`}
           </pre>
           <p>
-            Run <code>supabase/migrations/001_init.sql</code> in the Supabase SQL editor. That
-            creates the tables, indexes, and row-level security so each salesperson only sees
-            their own customers.
+            Locally, put the same values in <code>.env.local</code>. Run every file in{" "}
+            <code>supabase/migrations/</code> in the Supabase SQL editor.
           </p>
+          <a
+            href="/demo"
+            className="mt-2 flex h-12 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground"
+          >
+            Open demo
+          </a>
         </CardContent>
       </Card>
     </div>
