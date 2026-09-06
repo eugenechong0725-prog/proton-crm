@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CUSTOMER_STATUSES, PROTON_MODELS, type CustomerStatus } from "@/lib/constants";
 import { onClientSubmit, refreshPage } from "@/lib/client-nav";
@@ -25,10 +25,6 @@ function CustomerEditFormFields({ customer }: { customer: Customer }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<CustomerStatus>(customer.customer_status);
-
-  useEffect(() => {
-    setStatus(customer.customer_status);
-  }, [customer.customer_status, customer.updated_at]);
 
   async function onSubmit(formData: FormData) {
     setPending(true);
