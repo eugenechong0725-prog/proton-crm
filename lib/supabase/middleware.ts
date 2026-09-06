@@ -22,6 +22,12 @@ export async function updateSession(request: NextRequest) {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
+    if (pathname !== "/demo") {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/demo";
+      redirectUrl.search = "";
+      return NextResponse.redirect(redirectUrl);
+    }
     return NextResponse.next({ request });
   }
 
