@@ -2,10 +2,6 @@
 
 import { startTransition, type FormEvent } from "react";
 
-export function navigateTo(path: string) {
-  window.location.assign(path);
-}
-
 export function refreshPage(router: { refresh: () => void }) {
   startTransition(() => {
     try {

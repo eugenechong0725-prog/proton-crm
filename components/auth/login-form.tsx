@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { loginAction } from "@/lib/actions/auth";
-import { navigateTo, onClientSubmit } from "@/lib/client-nav";
+import { onClientSubmit } from "@/lib/client-nav";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export function LoginForm() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -23,7 +25,7 @@ export function LoginForm() {
       setError(result.error);
       return;
     }
-    navigateTo("/dashboard");
+    router.replace("/dashboard");
   }
 
   return (

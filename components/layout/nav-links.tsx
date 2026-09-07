@@ -17,6 +17,7 @@ export function SidebarLinks() {
           <Link
             key={item.href}
             href={item.href}
+            prefetch
             className={cn(
               "flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-colors",
               active ? "bg-white/12 text-white" : "text-sidebar-foreground/75 hover:bg-white/8 hover:text-white",
@@ -44,6 +45,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch
               className={cn(
                 "flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-semibold",
                 active ? "text-primary" : "text-muted-foreground",

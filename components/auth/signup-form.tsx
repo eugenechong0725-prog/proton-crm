@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { signupAction } from "@/lib/actions/auth";
-import { navigateTo, onClientSubmit } from "@/lib/client-nav";
+import { onClientSubmit } from "@/lib/client-nav";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export function SignupForm() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -28,9 +30,7 @@ export function SignupForm() {
         ? "Account created successfully."
         : "Account created successfully. Sign in with your email and password.",
     );
-    window.setTimeout(() => {
-      navigateTo(result.signedIn ? "/dashboard" : "/login");
-    }, 900);
+    router.replace(result.signedIn ? "/dashboard" : "/login");
   }
 
   return (

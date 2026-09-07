@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { logoutAction } from "@/lib/actions/auth";
-import { navigateTo } from "@/lib/client-nav";
 import { Button } from "@/components/ui/button";
 
 export function LogoutButton({ compact = false }: { compact?: boolean }) {
+  const router = useRouter();
   const [pending, setPending] = useState(false);
 
   async function onLogout() {
     setPending(true);
     await logoutAction();
-    navigateTo("/login");
+    router.replace("/login");
   }
 
   return (

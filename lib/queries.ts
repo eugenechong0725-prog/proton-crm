@@ -60,37 +60,23 @@ async function attachRelations(
   );
 }
 
-export async function getSessionUser() {
-  if (await getDemoSessionId()) {
-    return {
-      id: DEMO_PROFILE.id,
-      email: DEMO_PROFILE.email,
-      created_at: DEMO_PROFILE.created_at,
-      user_metadata: { full_name: DEMO_PROFILE.full_name },
-    };
-  }
-
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
-}
-
 export async function getProfile(): Promise<Profile | null> {
   if (await getDemoSessionId()) return DEMO_PROFILE;
 
-  const user = await getSessionUser();
-  if (!user) return null;
-
   const supabase = await createClient();
-  const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const claims = claimsData?.claims;
+  if (!claims?.sub) return null;
+
+  const { data } = await supabase.from("profiles").select("*").eq("id", claims.sub).maybeSingle();
+  const metadata = claims.user_metadata as { full_name?: string } | undefined;
+  const createdAt = typeof claims.iat === "number" ? new Date(claims.iat * 1000).toISOString() : new Date().toISOString();
   return (data as Profile | null) ?? {
-    id: user.id,
-    full_name: user.user_metadata?.full_name ?? null,
-    email: user.email ?? null,
-    created_at: user.created_at,
-    updated_at: user.created_at,
+    id: claims.sub,
+    full_name: metadata?.full_name ?? null,
+    email: typeof claims.email === "string" ? claims.email : null,
+    created_at: createdAt,
+    updated_at: createdAt,
   };
 }
 
@@ -209,11 +195,16 @@ export async function getFollowUpLists(now = new Date()) {
         return (data as Customer[]) ?? [];
       })();
 
+  return buildFollowUpLists(source, now);
+}
+
+function buildFollowUpLists(source: Customer[], now: Date) {
   const today: Customer[] = [];
   const overdue: Customer[] = [];
   const upcoming: Customer[] = [];
 
   for (const row of source) {
+    if (!row.follow_up_enabled || !row.next_follow_up_at || row.archived_at) continue;
     const bucket = followUpBucket(row.next_follow_up_at, row.follow_up_enabled, now);
     if (bucket === "today") today.push(row);
     if (bucket === "overdue") overdue.push(row);
@@ -241,6 +232,10 @@ export async function getInsuranceAlerts(now = new Date()): Promise<{
         return attachRelations(supabase, (rows as Customer[]) ?? []);
       })();
 
+  return buildInsuranceAlerts(data, now);
+}
+
+function buildInsuranceAlerts(data: CustomerRecord[], now: Date) {
   const counts: Record<InsuranceBucket, number> = {
     due_30: 0,
     due_14: 0,
@@ -271,16 +266,12 @@ export async function getInsuranceAlerts(now = new Date()): Promise<{
 
 export async function getDashboardData() {
   const now = new Date();
-  const [followUps, insurance, customers] = await Promise.all([
-    getFollowUpLists(now),
-    getInsuranceAlerts(now),
-    getCustomers({}),
-  ]);
+  const customers = await getCustomers({});
 
   return {
     today: todayInKL(now),
-    followUps,
-    insurance,
+    followUps: buildFollowUpLists(customers, now),
+    insurance: buildInsuranceAlerts(customers, now),
     totalCustomers: customers.length,
   };
 }

@@ -1,8 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { navigateTo, onClientSubmit } from "@/lib/client-nav";
+import { onClientSubmit } from "@/lib/client-nav";
 import {
   CUSTOMER_STATUSES,
   INTEREST_LEVELS,
@@ -21,6 +22,7 @@ import { FollowUpPicker } from "@/components/shared/follow-up-picker";
 import { SoldFields } from "@/components/customers/sold-fields";
 
 export function CustomerForm() {
+  const router = useRouter();
   const [status, setStatus] = useState<CustomerStatus>("new_lead");
   const [model, setModel] = useState<ProtonModel | "">("");
   const [preset, setPreset] = useState<FollowUpPreset>("none");
@@ -40,9 +42,7 @@ export function CustomerForm() {
     }
 
     toast.success("Customer saved successfully.");
-    window.setTimeout(() => {
-      navigateTo(result.id ? `/customers/${result.id}` : "/customers");
-    }, 650);
+    router.push(result.id ? `/customers/${result.id}` : "/customers");
   }
 
   return (

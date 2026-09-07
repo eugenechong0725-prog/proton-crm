@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { requestPasswordResetAction, updatePasswordAction } from "@/lib/actions/auth";
-import { navigateTo, onClientSubmit } from "@/lib/client-nav";
+import { onClientSubmit } from "@/lib/client-nav";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export function ForgotPasswordForm({ recoveryMode = false }: { recoveryMode?: boolean }) {
+  const router = useRouter();
   const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -37,7 +39,7 @@ export function ForgotPasswordForm({ recoveryMode = false }: { recoveryMode?: bo
       return;
     }
     toast.success("Password updated successfully.");
-    window.setTimeout(() => navigateTo("/login"), 900);
+    router.replace("/login");
   }
 
   if (recoveryMode) {
